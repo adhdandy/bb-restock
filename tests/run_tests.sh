@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# Teste de ponta a ponta: gera arquivos sinteticos com a SoulsFormats, roda o
-# bb_restock.py e verifica o resultado com a SoulsFormats.
-# Requer: git, python3, .NET SDK 8+.
+# End-to-end test: generates synthetic files with SoulsFormats, runs
+# bb_restock.py and checks the result with SoulsFormats.
+# Requires: git, python3, .NET SDK 8+.
 set -euo pipefail
 HERE="$(cd "$(dirname "$0")" && pwd)"
 DEPS="$HERE/.deps"
@@ -12,7 +12,7 @@ if [ ! -d "$DEPS/SoulsFormatsNEXT" ]; then
   git clone -q --depth 1 https://github.com/soulsmods/SoulsFormatsNEXT "$DEPS/SoulsFormatsNEXT"
 fi
 
-# Compila a SoulsFormats com o SDK instalado (o projeto pede net9.0).
+# Build SoulsFormats with the installed SDK (the project targets net9.0).
 SDK_MAJOR="$(dotnet --version | cut -d. -f1)"
 TARGET="net${SDK_MAJOR}.0"
 SF_PROJ="$DEPS/SoulsFormatsNEXT/SoulsFormats/SoulsFormats.csproj"
@@ -30,8 +30,8 @@ for v in 0 1 2 3; do
   dotnet "$VERIFY" verify "$WORK/t$v/game" "$WORK/t$v/mod" 20 15
 done
 
-# Rodar sobre arquivos ja modificados deve falhar sem gerar nada.
+# Running on already modified files must fail without generating anything.
 if python3 -I "$HERE/../bb_restock.py" "$WORK/t0/mod" --out "$WORK/t0/mod2" 2>/dev/null; then
-  echo "FALHA: patch duplo foi aceito"; exit 1
+  echo "FAIL: double patch was accepted"; exit 1
 fi
-echo "TODOS OS TESTES PASSARAM"
+echo "ALL TESTS PASSED"

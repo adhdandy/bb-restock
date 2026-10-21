@@ -1,37 +1,35 @@
-# BB Restock 2.0
+# BB Restock 2.2
 
-Mod para **Bloodborne** no PC ([bbport](https://github.com/Supermedo/bloodborne_pc)
-ou [shadPS4](https://github.com/shadps4-emu/shadPS4)) que completa seus Blood Vials
-e Quicksilver Bullets até o máximo toda vez que a área carrega.
+A mod for **Bloodborne** on PC ([bbport](https://github.com/Supermedo/bloodborne_pc) or [shadPS4](https://github.com/shadps4-emu/shadPS4)) that fills your Blood Vials
+and Quicksilver Bullets to the maximum on respawn after death and on lantern
+travel, while leaving booting and loading the save alone.
 
-> **Status:** testado no jogo (versão 1.09, bbport). Relatos de funcionamento em
-> outras configurações são bem-vindos via *issues*.
+## Requirements
 
-## Requisitos
+- Bloodborne **CUSA03173, game version 1.09** (the same one required by bbport).
+  **Do not use it with other versions**: the replaced file may break game events.
+- bbport or shadPS4.
+- To generate the mod with the script: Python 3.8 or newer (standard library
+  only) and the extracted game files (the folder containing `dvdroot_ps4`).
 
-- Bloodborne **CUSA03173, versão 1.09** do jogo (a mesma exigida pelo bbport).
-  **Não use em outras versões**: o arquivo substituído pode quebrar eventos do jogo.
-- bbport ou shadPS4.
-- Para gerar o mod com o script: Python 3.8 ou mais recente (só a biblioteca
-  padrão) e os arquivos do jogo extraídos (a pasta que contém `dvdroot_ps4`).
+## What it does
 
-## O que faz
+During a play session, on **respawn after death** and on **lantern travel**,
+your **Blood Vials** and **Quicksilver Bullets** are filled to the maximum
+(20 each). Only what is missing is added, straight to the inventory, without
+the "item received" window. Nothing goes to Storage. Booting the game and
+loading the save (quit -> Continue) do **not** refill. No more farming.
 
-Toda vez que a área carrega (respawn após morrer, viagem por lanterna, carregar
-o save), seus **Blood Vials** e **Quicksilver Bullets** são completados até o
-máximo (20 de cada). Só entra o que falta, direto no inventário, sem a janela
-de "item recebido". Nada vai para o Armazém. Chega de farmar.
+## Installation
 
-## Instalação
+This repository **does not contain game files**. First generate the mod from
+your copy of Bloodborne (see [Generating the mod](#generating-the-mod)); the
+result is the `BB_Restock_Mod` folder.
 
-Este repositório **não contém arquivos do jogo**. Primeiro gere o mod a partir
-da sua cópia do Bloodborne (veja [Gerar o mod](#gerar-o-mod)); o resultado é a
-pasta `BB_Restock_Mod`.
+### bbport (recommended: does not modify the game files)
 
-### bbport (recomendado: não altera os arquivos do jogo)
-
-1. Copie a pasta do mod para dentro da pasta `mods` do bbport. Se ela não
-   existir, crie-a ao lado do `Bloodborne.exe`:
+1. Copy the mod folder into bbport's `mods` folder. If it does not exist,
+   create it next to `Bloodborne.exe`:
 
    ```
    bbport-windows\
@@ -39,137 +37,173 @@ pasta `BB_Restock_Mod`.
    └── mods\
        └── BB_Restock_Mod\
            ├── dvdroot_ps4\ ...
-           └── LEIA-ME.txt
+           └── README.txt
    ```
 
-2. Abra o `Bloodborne.exe` (launcher) e confira na aba **Mods & patches** que o
-   mod aparece ativado. Pronto.
+2. Open `Bloodborne.exe` (launcher) and check on the **Mods & patches** tab that
+   the mod appears enabled. Done.
 
-**Desinstalar:** apague a pasta do mod em `mods\` (ou desative no launcher).
+**Uninstall:** delete the mod folder in `mods\` (or disable it in the launcher).
 
-### shadPS4 (ou sem bbport)
+### shadPS4 (or without bbport)
 
-1. Faça backup deste arquivo da pasta do jogo (`CUSA03173`):
+1. Back up this file from the game folder (`CUSA03173`):
    `dvdroot_ps4\event\common.emevd.dcx`.
-   Se você usa uma pasta de update separada (ex.: `CUSA03173-UPDATE`), o
-   arquivo dela tem prioridade: faça o backup e copie para **ela**.
-2. Copie a pasta `dvdroot_ps4` do mod por cima da pasta `dvdroot_ps4` do jogo,
-   substituindo o arquivo.
+   If you use a separate update folder (e.g. `CUSA03173-UPDATE`), its file has
+   priority: back it up and copy to **it**.
+2. Copy the mod's `dvdroot_ps4` folder over the game's `dvdroot_ps4` folder,
+   replacing the file.
 
-**Desinstalar:** restaure o arquivo do backup (ou o `.bak` criado pelo `--install`).
+**Uninstall:** restore the file from the backup (or the `.bak` created by `--install`).
 
-### Em outros PCs
+### On other PCs
 
-Basta copiar a pasta do mod gerada: não é preciso rodar o script de novo. O PC
-de destino precisa ter a **mesma versão do jogo** (1.09).
+Just copy the generated mod folder: there is no need to run the script again.
+The destination PC must have the **same game version** (1.09).
 
-## Compatibilidade
+## Compatibility
 
-- O mod substitui um único arquivo: `dvdroot_ps4\event\common.emevd.dcx`.
-  Ele conflita com qualquer outro mod que substitua esse mesmo arquivo; só um
-  dos dois vai funcionar. No bbport, vale o mod carregado por último na aba
-  **Mods & patches**.
-- Mods que alteram outros arquivos (params, modelos, mapas, texturas)
-  funcionam juntos.
+- The mod replaces a single file: `dvdroot_ps4\event\common.emevd.dcx`.
+  It conflicts with any other mod that replaces that same file; only one of the
+  two will work. In bbport, the mod loaded last on the **Mods & patches** tab
+  wins.
+- Mods that change other files (params, models, maps, textures) work together.
 
-## Observações
+## Notes
 
-- Se você tiver mais que 20 (por exemplo com uma runa que aumenta o limite), o
-  mod não entrega nada daquele item. Para completar até outro número, gere o
-  mod com `--vials`/`--bullets`.
-- Itens que já estiverem no Armazém continuam lá; o mod só não adiciona mais.
+- If you have more than 20 (for example with a rune that raises the cap), the
+  mod gives nothing of that item. To top up to a different number, generate the
+  mod with `--vials`/`--bullets`.
+- Items already in Storage stay there; the mod simply no longer adds any.
 
-## Histórico de versões
+## Version history
 
-- **2.0**: completa até o máximo em vez de entregar 20 por carregamento: só o
-  que falta, direto no inventário, sem janela e sem nada para o Armazém. Agora
-  só o `common.emevd.dcx` é alterado (o gameparam não é mais necessário).
-- **1.0**: primeira versão: 20 Blood Vials e 20 Quicksilver Bullets por
-  carregamento, com o excedente indo para o Armazém.
+- **2.2**: in-game testing of 2.1 showed the game gives initialized events an
+  initial run on every load (boot, respawn, warp AND quit -> Continue), so the
+  rest behavior alone cannot keep loads clean. The refill is now guarded by a
+  session marker: the first run in a session (boot or loading the save) ends
+  without refilling, while later runs in that session (deaths and warps)
+  refill. The Dream watcher event was removed.
+- **2.1**: refills only on respawn after death and on lantern travel (arrival
+  in the Dream); loading the save (quit -> Continue) no longer refills.
+- **2.0**: tops up to the maximum instead of giving 20 per load: only what is
+  missing, straight to the inventory, without a window and with nothing going
+  to Storage. Now only `common.emevd.dcx` is changed (gameparam is no longer
+  needed).
+- **1.0**: first version: 20 Blood Vials and 20 Quicksilver Bullets per load,
+  with the excess going to Storage.
 
 ---
 
-## Gerar o mod
+## Generating the mod
 
 ```
-python bb_restock.py "C:\caminho\do\jogo\CUSA03173"
+python bb_restock.py "C:\path\to\game\CUSA03173"
 ```
 
-Você pode passar a pasta que contém `dvdroot_ps4` ou a própria `dvdroot_ps4`.
-Os arquivos originais **não são alterados**. O mod é gravado em `BB_Restock_Mod/`:
+You can pass the folder containing `dvdroot_ps4` or `dvdroot_ps4` itself. The
+original files **are not modified**. The mod is written to `BB_Restock_Mod/`:
 
 ```
 BB_Restock_Mod/
-├── LEIA-ME.txt
+├── README.txt
 └── dvdroot_ps4/
     └── event/common.emevd.dcx
 ```
 
-| Opção | Padrão | Descrição |
+| Option | Default | Description |
 |---|---|---|
-| `--vials N` | 20 | Completar Blood Vials até N (1–99; 20 é o máximo do jogo) |
-| `--bullets N` | 20 | Completar Quicksilver Bullets até N (1–99; 20 é o máximo do jogo) |
-| `--out PASTA` | `BB_Restock_Mod` | Pasta de saída |
-| `--install` | desligado | Também instala no jogo, salvando o original como `.bak` |
+| `--vials N` | 20 | Top up Blood Vials to N (1–99; 20 is the game maximum) |
+| `--bullets N` | 20 | Top up Quicksilver Bullets to N (1–99; 20 is the game maximum) |
+| `--out FOLDER` | `BB_Restock_Mod` | Output folder |
+| `--install` | off | Also installs into the game, saving the original as `.bak` |
 
-Se o arquivo tiver um formato inesperado ou já tiver sido modificado, o
-script para com uma mensagem de erro e não grava nada.
+If the file has an unexpected format or has already been modified, the script
+stops with an error message and writes nothing.
 
-## Como funciona
+## How it works
 
-O mod adiciona um evento novo (`9990000`) ao `common.emevd` e o inicializa no
-começo do evento `0`, que o jogo executa a cada carregamento de área. Para cada
-item, o evento faz:
+The mod adds one event to `common.emevd`, initialized at the start of event
+`0`, which the game runs on every area load. In-game tests of 2.1 showed that
+the game gives such an event an initial run on **every** load: booting, dying,
+warping and quit -> Continue — the rest behavior bit alone cannot tell a load
+apart from a respawn. What does differ is process lifetime: deaths and warps
+happen inside the running session, while quit -> Continue starts a fresh
+process (and so do brand-new games), with all runtime event values reset to 0.
+
+Event `9990000` (RestartOnRest) uses a runtime event value as a session marker:
 
 ```
-quero   = máximo                                   2003[41] Event Value Operation (atribuir)
-tenho   = quantidade no inventário                 2003[42] Store Item Amount Held in Event Value
-se tenho >= máximo: pula as duas próximas          3[12] IF Event Value + 1000[01] SKIP
-quero   = quero - tenho                            2003[41] Event Value Operation (subtrair)
-entrega "quero" unidades direto no inventário      2003[43] Directly Give Player Item
+increment marker (0/1 -> 1/2, capped at 2)          2003[31]  Increment Event Value
+marker != 1?                                        3[12]     IF Event Value (!=)
+if marker == 1 (first run): end without refilling   1000[02]  END IF (condition false)
+wait one second                                     1001[00]  WAIT
+top up both items (see below)
 ```
 
-É o mesmo padrão que o próprio jogo usa no evento `12101021` de
-`m21_00_00_00.emevd` para completar Quicksilver Bullets. A verificação
-`tenho >= máximo` evita que a subtração fique negativa.
+- **First run in a session** (brand-new boot, or the load after quitting):
+  the marker goes from 0 to 1, so the event ends quietly - no refill.
+- **Later runs in the session** (death respawns, lantern warps): the marker
+  goes from 1 to 2 (and stays there), so the run falls through to the refill.
+- The refill still waits one second first, so the game's own Storage refill
+  on death happens before the top-up.
+- The event refuses to run for non-host players (the vanilla human check).
 
-As variáveis ficam nos valores de evento de 8 bits em `6960`, `6970`, `6980` e
-`6990`. Nenhum evento ou script de diálogo do jogo usa a faixa `6960–6999`, e
-o script recusa a operação se o `common.emevd` usar alguma delas.
+For each item, the event does:
 
-### Detalhes técnicos
+```
+want    = maximum                                  2003[41] Event Value Operation (assign)
+have    = amount in the inventory                  2003[42] Store Item Amount Held in Event Value
+if have >= maximum: skip the next two              3[12] IF Event Value + 1000[01] SKIP
+want    = want - have                              2003[41] Event Value Operation (subtract)
+give "want" units straight to the inventory        2003[43] Directly Give Player Item
+```
 
-- **DCX:** descomprimido e recomprimido com zlib (DFLT), mantendo o cabeçalho original.
-- **EMEVD:** o arquivo é interpretado e regravado no layout do Bloodborne
-  (64-bit, versão `0xCC`). Antes de qualquer alteração, o script confirma que a
-  regravação preserva o conteúdo. Os índices de parâmetros do evento 0 são
-  ajustados pela instrução inserida.
+It is the same pattern the game itself uses in event `12101021` of
+`m21_00_00_00.emevd` to top up Quicksilver Bullets. The `have >= maximum` check
+prevents the subtraction from going negative.
 
-## Testes
+The variables live in the 8-bit event values at `6950` (the session marker),
+`6960` (amount to give) and `6970` (amount held). The last two are reused for
+both items because the two top-ups never overlap. No game event or dialog
+script uses the `6950-6999` range, and the script refuses the operation if
+`common.emevd` uses any of them.
 
-`tests/run_tests.sh` faz um teste de ponta a ponta:
+### Technical details
 
-1. Gera, com a [SoulsFormatsNEXT](https://github.com/soulsmods/SoulsFormatsNEXT),
-   arquivos sintéticos no formato do Bloodborne.
-2. Roda o `bb_restock.py` sobre eles.
-3. Relê o resultado com a SoulsFormats e verifica que:
-   - os eventos originais não mudaram;
-   - o evento novo e a inicialização no evento 0 estão corretos;
-   - rodar o script sobre arquivos já modificados é recusado.
+- **DCX:** decompressed and recompressed with zlib (DFLT), keeping the original header.
+- **EMEVD:** the file is parsed and rewritten in the Bloodborne layout
+  (64-bit, version `0xCC`). Before any change, the script confirms that the
+  rewrite preserves the content. Event 0's parameter indices are adjusted for
+  the inserted instruction.
 
-Requer `git`, `python3` e .NET SDK 8 ou mais recente:
+## Tests
+
+`tests/run_tests.sh` runs an end-to-end test:
+
+1. Generates synthetic files in the Bloodborne format with
+   [SoulsFormatsNEXT](https://github.com/soulsmods/SoulsFormatsNEXT).
+2. Runs `bb_restock.py` on them.
+3. Re-reads the result with SoulsFormats and checks that:
+   - the original events did not change;
+   - the new event, its initialization in event 0 and the session-marker gate
+     are correct;
+   - running the script on already modified files is refused.
+
+Requires `git`, `python3` and .NET SDK 8 or newer:
 
 ```
 bash tests/run_tests.sh
 ```
 
-## Créditos
+## Credits
 
-- [SoulsFormatsNEXT](https://github.com/soulsmods/SoulsFormatsNEXT): referência
-  dos formatos DCX e EMEVD; usada nos testes.
-- [DarkScript3](https://github.com/AinTunez/DarkScript3): definições das instruções EMEVD.
+- [SoulsFormatsNEXT](https://github.com/soulsmods/SoulsFormatsNEXT): reference
+  for the DCX and EMEVD formats; used in the tests.
+- [DarkScript3](https://github.com/AinTunez/DarkScript3): EMEVD instruction definitions.
 
-## Licença
+## License
 
-[MIT](LICENSE). Bloodborne é propriedade da Sony Interactive Entertainment e da
-FromSoftware. Este projeto não é afiliado a elas e não distribui conteúdo do jogo.
+[MIT](LICENSE). Bloodborne is the property of Sony Interactive Entertainment and
+FromSoftware. This project is not affiliated with them and does not distribute
+game content.

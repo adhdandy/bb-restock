@@ -1,10 +1,10 @@
-# Saida do script e arquivos do jogo (nunca versionar)
+# Script output and game files (never commit)
 BB_Restock_Mod/
 dvdroot_ps4/
 *.dcx
 *.bak
 
-# Testes
+# Tests
 tests/.deps/
 tests/.work/
 bin/

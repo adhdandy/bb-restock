@@ -1,7 +1,7 @@
-// Gera arquivos sinteticos no formato do Bloodborne com a SoulsFormats e
-// verifica, tambem com a SoulsFormats, o resultado do bb_restock.py.
-//   verify gen <dir> <variante 0-3>
-//   verify verify <dir_original> <dir_mod> <vials> <bullets>
+// Generates synthetic files in the Bloodborne format with SoulsFormats and
+// checks the result of bb_restock.py, also with SoulsFormats.
+//   verify gen <dir> <variant 0-3>
+//   verify verify <orig_dir> <mod_dir> <vials> <bullets>
 using SoulsFormats;
 
 
@@ -43,7 +43,7 @@ static class P
         Console.WriteLine($"gen ok variant {variant}: {evd.Events.Count} events");
     }
 
-    static void Check(bool ok, string msg) { if (!ok) throw new Exception("FALHA: " + msg); }
+    static void Check(bool ok, string msg) { if (!ok) throw new Exception("FAIL: " + msg); }
 
     static byte[] Bytes(params object[] values)
     {
@@ -78,14 +78,14 @@ static class P
             Check(x.Bank == expected[k].bank && x.ID == expected[k].id && x.Layer == null, $"topup {item} instr {k}");
             Check(x.ArgData.SequenceEqual(expected[k].args), $"topup {item} args {k}");
         }
-        Console.WriteLine($"  item {item}: completa ate {max}");
+        Console.WriteLine($"  item {item}: tops up to {max}");
     }
 
     static int Verify(string orig, string mod, int vials, int bullets)
     {
         string gpRel = Path.Combine("dvdroot_ps4", "param", "gameparam", "gameparam.parambnd.dcx");
         string evRel = Path.Combine("dvdroot_ps4", "event", "common.emevd.dcx");
-        Check(!File.Exists(Path.Combine(mod, gpRel)), "gameparam nao deve ser gerado");
+        Check(!File.Exists(Path.Combine(mod, gpRel)), "gameparam should not be generated");
 
         var e0 = EMEVD.Read(Path.Combine(orig, evRel));
         var e1 = EMEVD.Read(Path.Combine(mod, evRel));
@@ -108,15 +108,32 @@ static class P
                 Check(x.InstructionIndex + off == y.InstructionIndex && x.TargetStartByte == y.TargetStartByte && x.SourceStartByte == y.SourceStartByte && x.ByteCount == y.ByteCount, "param");
             }
         }
-        var init = e1.Events.First(e => e.ID == 0).Instructions[0];
-        Check(init.Bank == 2000 && init.ID == 0 && init.ArgData.SequenceEqual(new byte[] { 0,0,0,0, 0x70,0x6F,0x98,0, 0,0,0,0 }), "init instr");
-        var ne = e1.Events.Last();
-        Check(ne.ID == 9990000 && ne.RestBehavior == EMEVD.Event.RestBehaviorType.Default, "new event");
-        Check(ne.Instructions.Count == 12 && ne.Parameters.Count == 0, "new event size");
-        CheckTopUp(ne.Instructions, 0, 1000, vials, 6960, 6970, 1);
-        CheckTopUp(ne.Instructions, 6, 900, bullets, 6980, 6990, 2);
+        var init = e1.Events.First(e => e.ID == 0).Instructions;
+        Check(init[0].Bank == 2000 && init[0].ID == 0 && init[0].ArgData.SequenceEqual(new byte[] { 0,0,0,0, 0x70,0x6F,0x98,0, 0,0,0,0 }), "init instr 9990000");
+
+        // Event 9990000 (RestartOnRest): value-gated top-up. First run in a
+        // session (boot / quit->Continue load): the marker increments from 0
+        // to 1, so the event ends without refilling. Later runs in the same
+        // session (death respawn, lamp warp): the marker is 2, refill.
+        var re = e1.Events.Last();
+        Check(re.ID == 9990000 && re.RestBehavior == EMEVD.Event.RestBehaviorType.Restart, "respawn event");
+        Check(re.Instructions.Count == 19 && re.Parameters.Count == 0, "respawn event size");
+        Check(re.Instructions[0].Bank == 2000 && re.Instructions[0].ID == 2, "respawn DisableNetworkSync");
+        Check(re.Instructions[1].Bank == 4 && re.Instructions[1].ID == 3, "respawn CharacterIsHuman");
+        Check(re.Instructions[2].Bank == 1000 && re.Instructions[2].ID == 2, "respawn end if not human");
+        Check(re.Instructions[3].Bank == 2003 && re.Instructions[3].ID == 31 &&
+              re.Instructions[3].ArgData.SequenceEqual(Bytes(6950, 8u, 2u)), "gate: increment marker 6950 (max 2)");
+        Check(re.Instructions[4].Bank == 3 && re.Instructions[4].ID == 12 &&
+              re.Instructions[4].ArgData.SequenceEqual(
+                  Bytes((sbyte)3, (byte)0, (byte)0, (byte)0, 6950, (byte)8, (byte)1, (byte)0, (byte)0, (uint)1)), "gate: value 6950 != 1");
+        Check(re.Instructions[5].Bank == 1000 && re.Instructions[5].ID == 2 &&
+              re.Instructions[5].ArgData.SequenceEqual(Bytes((byte)0, (byte)0, (sbyte)3, (byte)0)), "end on first run");
+        Check(re.Instructions[6].Bank == 1001 && re.Instructions[6].ID == 0, "respawn Wait");
+        CheckTopUp(re.Instructions, 7, 1000, vials, 6960, 6970, 1);
+        CheckTopUp(re.Instructions, 13, 900, bullets, 6960, 6970, 2);
+        Console.WriteLine("  event 9990000 (RestartOnRest): session-marker gate + refills on in-session reloads");
         Check(e1.StringData.SequenceEqual(e0.StringData) && e1.LinkedFileOffsets.SequenceEqual(e0.LinkedFileOffsets), "strings");
-        // a regravacao pela SF deve ser identica ao que o patcher gerou
+        // the SF rewrite must be identical to what the patcher generated
         var raw = DCX.Decompress(Path.Combine(mod, evRel));
         Check(e1.Write(new DCX.NoCompressionInfo()).SequenceEqual(raw), "SF rewrite identical");
         Console.WriteLine("VERIFY OK");
